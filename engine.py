@@ -46,7 +46,8 @@ def setup_images():
             "Cat": "Character Cat Girl.png",
             "Horns": "Character Horn Girl.png",
             "Girl": "Character Pink Girl.png",
-            "Princess": "Character Princess Girl.png"
+            "Princess": "Character Princess Girl.png",
+            "Star": "Star.png"
             }
 
     for k,v in filenames.items():
@@ -121,7 +122,11 @@ def run():
     pyglet.clock.schedule_interval(update, 1/10.)
     game.initialize()
     pyglet.app.run()
-
+    game.tripletown()
+    #some other fucntion that runs things
+    #game.tripletown()
+    ### store the matrix
+    ### get_el() = > tell us what's at x,y
 
 if __name__ == "__main__":
     run()

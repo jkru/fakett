@@ -3,6 +3,7 @@ import pyglet
 from pyglet.window import key
 from core import GameElement
 import sys
+import random
 
 #### DO NOT TOUCH ####
 GAME_BOARD = None
@@ -12,37 +13,19 @@ DEBUG = False
 
 ##set the size of the game board
 
-GAME_WIDTH = 10
-GAME_HEIGHT = 10
+GAME_WIDTH = 4
+GAME_HEIGHT = 4
 
 #### Put class definitions here ####
 
-#create a class, and then add an image. check engine.py to see if image is in dictionary
-class Gem(GameElement):
-    IMAGE = "BlueGem"
-    SOLID = False
-
-#allows player to interact with gem, picks it up when it touches it.
-    def interact(self, player):
-        player.inventory.append(self)
-        GAME_BOARD.draw_msg("You just acquired a gem! You have %d items." %(len(player.inventory)))
-
-class Wall(GameElement):
-    IMAGE = "Wall"
-    SOLID = True
-
-#change this
-class Ramp(GameElement):
-    IMAGE = "pikachu"
-    SOLID = True
-
-#prototype for an element that does not interact and doesn't allow player to move
-class Rock(GameElement):
-    IMAGE = "Rock"
-    SOLID = True
-
-class Character(GameElement):
-    IMAGE = "Girl"
+class Piece(GameElement):
+    def __init__(self, piece_type):
+        #pick which piece type
+        # self.piece_type = random.choice(["Rock","GreenGem","Star"])
+        # IMAGE = self.piece_type
+        self.piece_type = piece_type
+        GAME_BOARD.draw_msg("You just acquired a %s! Move your piece with the arrow keys and place with spacebar" % self.piece_type)
+        print(self.piece_type)
 
     def next_pos(self, direction):
         if direction == "up":
@@ -53,6 +36,8 @@ class Character(GameElement):
             return (self.x-1, self.y)
         elif direction == "right":
             return (self.x+1, self.y)
+        elif direction == "putdown":
+            return (self.x, self.y)
         return None
 
     def keyboard_handler(self, symbol, modifier):
@@ -67,6 +52,9 @@ class Character(GameElement):
             direction = "left"
         elif symbol == key.RIGHT:
             direction = "right"
+        elif symbol == key.SPACE:
+            direction = "putdown"
+
         
         self.board.draw_msg("[%s] moves %s" % (self.IMAGE, direction))
 
@@ -89,65 +77,83 @@ class Character(GameElement):
                     self.board.del_el(self.x, self.y)
                     self.board.set_el(next_x, next_y, self)
 
+        if direction == "putdown":
+            GAME_BOARD.register(self)
+#            make_random_piece()
+            
+
+            # new_piece = [next_x, next_y, self.piece_type]
+            # x,y, piece_type = new_piece
+
+
+
+class Rock(Piece):
+    IMAGE = "Rock"
     def __init__(self):
-        GameElement.__init__(self)
-        self.inventory = []
+        self.piece_type = "Rock"
+        return super(Rock, self).__init__("Rock")
+
+class GreenGem(Piece):
+    IMAGE = "GreenGem"
+    def __init__(self):
+        self.piece_type = "GreenGem"
+        return super(GreenGem, self).__init__("GreenGem")
+
+class Star(Piece):
+    IMAGE = "Star"
+    def __init__(self):
+        self.piece_type = "Star"
+        return super(Star, self).__init__("Star")
 
 
 ####   End class definitions    ####
+# def make_random_piece():
+#     first_piece_class = random.choice(["Rock","Star","GreenGem"])
+#     if first_piece_class == "Rock":
+#         first_piece = Rock()
+#     elif first_piece_class == "GreenGem":
+#         first_piece = GreenGem()
+#     else:
+#         first_piece = Star()
+#     return(first_piece)
+
+
 
 def initialize():
     """Put game initialization code here"""
 
-#make a list of tuples and decide where rocks will live    
-    rock_positions = [
-        (2, 1),
-        (1, 2),
-        (3, 2),
-        (2, 3)
-        ]
-#create a list with rock postions. can then access individual rocks from the list.
-    rocks = []
-#for loop iterating over the rocks and actually placing them
-    for pos in rock_positions:
-        rock = Rock()
-        GAME_BOARD.register(rock)
-        GAME_BOARD.set_el(pos[0], pos[1], rock)
-        rocks.append(rock)
+    a_piece_class = random.choice(["Rock","Star","GreenGem"])
+    if a_piece_class == "Rock":
+         a_piece = Rock()
+    elif a_piece_class == "GreenGem":
+         a_piece = GreenGem()
+    else:
+         a_piece = Star()
 
-#example of interacting with a rock and making it edible
-    rocks[-1].SOLID = False
+#    a_piece = make_random_piece()
+    GAME_BOARD.register(a_piece)
+    first_x = random.randint(0,3)
+    first_y = random.randint(0,3)
+    GAME_BOARD.set_el(first_x,first_y,a_piece)
 
-#instantiating player
-    player = Character()
-    GAME_BOARD.register(player)
-    GAME_BOARD.set_el(2, 2, player)
+
+
+def tripletown():
+        #initialize matrix to 0, for nothing in it
+    board_matrix = []
+    for i in range(GAME_WIDTH):
+        board_matrix.append([])
+        for j in range(GAME_HEIGHT):
+            board_matrix[i].append([0,0,0,0])
+
+    print(board_matrix)
+
+
+
+
+    #get some sort of method from the piece class
+    #to then modify board matrix
+
     
-#instantiating gem
-    GAME_BOARD.draw_msg("This game is wicked awesome.")
-    gem = Gem()
-    GAME_BOARD.register(gem)
-    GAME_BOARD.set_el(3,1,gem)
-#same deal as with rocks, but this time with a wall
-    wall_positions = [
-        (5, 1),
-        (5, 2),
-        (5, 3),
-        (5, 4),
-        (5, 6),
-        (5, 7),
-        (5, 8),
-        (5, 9)
-        ]
 
-    walls = []
-    for position in wall_positions:
-        wall = Wall()
-        GAME_BOARD.register(wall)
-        GAME_BOARD.set_el(position[0],position[1],wall)
-        walls.append(wall)
 
-#make a water ramp
-    rampwest = Ramp()
-    GAME_BOARD.register(rampwest)
-    GAME_BOARD.set_el(4,5,rampwest)
