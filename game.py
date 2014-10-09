@@ -17,6 +17,10 @@ class Gem(GameElement):
     IMAGE = "BlueGem"
     SOLID = False
 
+    def interact(self, player):
+        player.inventory.append(self)
+        GAME_BOARD.draw_msg("You just acquired a gem! You have %d items." %(len(player.inventory)))
+
 class Rock (GameElement):
     IMAGE = "Rock"
     SOLID = True
@@ -59,6 +63,9 @@ class Character(GameElement):
 
                 existing_el = self.board.get_el(next_x, next_y)
 
+                if existing_el:
+                    existing_el.interact(self)
+
                 if existing_el and existing_el.SOLID:
                     self.board.draw_msg("There is something in my way!")
 
@@ -66,6 +73,9 @@ class Character(GameElement):
                     self.board.del_el(self.x, self.y)
                     self.board.set_el(next_x, next_y, self)
 
+    def __init__(self):
+        GameElement.__init__(self)
+        self.inventory = []
 
 
 ####   End class definitions    ####
