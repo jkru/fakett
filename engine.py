@@ -24,6 +24,7 @@ TILE_HEIGHT = 0
 # Setup mapping of images to be used in game
 def setup_images():
     filenames = {
+            "pikachu" : "pikachu.png",
             "Wall": "Wall Block.png",
             "Block": "Plain Block.png",
             "GrassBlock": "Grass Block.png",

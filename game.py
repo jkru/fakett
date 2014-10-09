@@ -9,19 +9,35 @@ GAME_BOARD = None
 DEBUG = False
 ######################
 
-GAME_WIDTH = 5
-GAME_HEIGHT = 5
+
+##set the size of the game board
+
+GAME_WIDTH = 10
+GAME_HEIGHT = 10
 
 #### Put class definitions here ####
+
+#create a class, and then add an image. check engine.py to see if image is in dictionary
 class Gem(GameElement):
     IMAGE = "BlueGem"
     SOLID = False
 
+#allows player to interact with gem, picks it up when it touches it.
     def interact(self, player):
         player.inventory.append(self)
         GAME_BOARD.draw_msg("You just acquired a gem! You have %d items." %(len(player.inventory)))
 
-class Rock (GameElement):
+class Wall(GameElement):
+    IMAGE = "Wall"
+    SOLID = True
+
+#change this
+class Ramp(GameElement):
+    IMAGE = "pikachu"
+    SOLID = True
+
+#prototype for an element that does not interact and doesn't allow player to move
+class Rock(GameElement):
     IMAGE = "Rock"
     SOLID = True
 
@@ -82,27 +98,56 @@ class Character(GameElement):
 
 def initialize():
     """Put game initialization code here"""
+
+#make a list of tuples and decide where rocks will live    
     rock_positions = [
         (2, 1),
         (1, 2),
         (3, 2),
         (2, 3)
         ]
+#create a list with rock postions. can then access individual rocks from the list.
     rocks = []
+#for loop iterating over the rocks and actually placing them
     for pos in rock_positions:
         rock = Rock()
         GAME_BOARD.register(rock)
         GAME_BOARD.set_el(pos[0], pos[1], rock)
         rocks.append(rock)
 
+#example of interacting with a rock and making it edible
     rocks[-1].SOLID = False
 
+#instantiating player
     player = Character()
     GAME_BOARD.register(player)
     GAME_BOARD.set_el(2, 2, player)
-    print player
-
+    
+#instantiating gem
     GAME_BOARD.draw_msg("This game is wicked awesome.")
     gem = Gem()
     GAME_BOARD.register(gem)
     GAME_BOARD.set_el(3,1,gem)
+#same deal as with rocks, but this time with a wall
+    wall_positions = [
+        (5, 1),
+        (5, 2),
+        (5, 3),
+        (5, 4),
+        (5, 6),
+        (5, 7),
+        (5, 8),
+        (5, 9)
+        ]
+
+    walls = []
+    for position in wall_positions:
+        wall = Wall()
+        GAME_BOARD.register(wall)
+        GAME_BOARD.set_el(position[0],position[1],wall)
+        walls.append(wall)
+
+#make a water ramp
+    rampwest = Ramp()
+    GAME_BOARD.register(rampwest)
+    GAME_BOARD.set_el(4,5,rampwest)
