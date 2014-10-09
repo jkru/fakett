@@ -13,6 +13,10 @@ GAME_WIDTH = 5
 GAME_HEIGHT = 5
 
 #### Put class definitions here ####
+class Gem(GameElement):
+    IMAGE = "BlueGem"
+    SOLID = False
+
 class Rock (GameElement):
     IMAGE = "Rock"
     SOLID = True
@@ -87,3 +91,8 @@ def initialize():
     GAME_BOARD.register(player)
     GAME_BOARD.set_el(2, 2, player)
     print player
+
+    GAME_BOARD.draw_msg("This game is wicked awesome.")
+    gem = Gem()
+    GAME_BOARD.register(gem)
+    GAME_BOARD.set_el(3,1,gem)
