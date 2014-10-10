@@ -87,6 +87,8 @@ class Piece(GameElement):
             self.is_placed = True
 
 
+
+
             #determine how to update matrix
             if self.piece_type == "Rock":
                 the_type = 1
@@ -102,38 +104,65 @@ class Piece(GameElement):
 
             #check our matrix horizontally
             horizontal_check = []
-            for j in range((self.x - 2),(self.x + 3)):
+#            for j in range((self.x - 2),(self.x + 3)):
+            for j in range(5):
                 horizontal_check.append(self.board.placed_pieces[self.y][j])
 
             hc_str = ''.join(str(e) for e in horizontal_check)
+            if str(the_type)*3 in hc_str:
+                print self.board.placed_pieces
+                self.board.placed_pieces[self.y][self.x] = the_type+1
+                print("hooray!")
+            else:
+                print("stuff")
+                print self.board.placed_pieces
 
             vertical_check = []
-            for i in range((self.y - 2),(self.y + 3)):
-                vertical_check.append(self.board.placed_pieces[i][self.x])
-                
+#            for i in range((self.y - 2),(self.y + 3)):
+            for j in range(5):
+                print(j,self.x, self.board.placed_pieces[j][self.x])
+               # raw_input()
+                vertical_check.append(self.board.placed_pieces[j][self.x])
             vc_str = ''.join(str(e) for e in vertical_check)
 
+            if str(the_type)*3 in vc_str:
+                print self.board.placed_pieces
+                self.board.placed_pieces[self.y][self.x] = the_type+1
+                print("hooray!")
+            else:
+                print("stuff")
+                print self.board.placed_pieces
+
+
+            GAME_BOARD.set_el(self.x+1,self.y, self)
 
 
 
+            placed_piece = ShortTree()
+            GAME_BOARD.register(placed_piece)
+            GAME_BOARD.set_el(self.x,self.y, placed_piece)
 
-            #print self.board.placed_pieces
 
 
-            # #need to put that piece down there forever:
-            # self.board.set_el(self.next_pos(direction)[0],self.next_pos(direction)[1],self)
+            # #print self.board.placed_pieces
 
-            # #supposed to create a new random piece
-            # new_piece = make_random_piece()
+            # # #need to put that piece down there forever:
+            # # self.board.set_el(self.next_pos(direction)[0],self.next_pos(direction)[1],self)
+
+            # # #supposed to create a new random piece
+            # #new_piece = make_random_piece()
+            # new_piece = Rock()
             # GAME_BOARD.register(new_piece)
-            # new_piece_position = self.next_pos(direction)
-            # new_x = new_piece_position[0] + 1
-            # new_y = new_piece_position[1]
-            # GAME_BOARD.set_el(new_x,new_y,new_piece)
+            # GAME_BOARD.set_el(4,4, new_piece)
+
+            # # new_piece_position = self.next_pos(direction)
+            # # new_x = new_piece_position[0] +1
+            # # new_y = new_piece_position[1]
+            # # GAME_BOARD.set_el(new_x,new_y,new_piece)
 
 
-            # print("gets here?")
-            # direction = None
+            # # print("gets here?")
+            # # direction = None
             
 
             # new_piece = [next_x, next_y, self.piece_type]
@@ -188,6 +217,9 @@ def initialize():
     for i in range(1,6):
         tree_positions.append([i,6])
 
+    new_piece = Rock()
+    GAME_BOARD.register(new_piece)
+    GAME_BOARD.set_el(4,4, new_piece)
 
 
     trees = []
@@ -197,11 +229,11 @@ def initialize():
         GAME_BOARD.set_el(pos[0], pos[1], tree)
         trees.append(tree)
 
-    a_piece = make_random_piece()
-    GAME_BOARD.register(a_piece)
-    first_x = random.randint(1,5)
-    first_y = random.randint(1,5)
-    GAME_BOARD.set_el(first_x,first_y,a_piece)
+    # a_piece = make_random_piece()
+    # GAME_BOARD.register(a_piece)
+    # first_x = random.randint(1,5)
+    # first_y = random.randint(1,5)
+    # GAME_BOARD.set_el(first_x,first_y,a_piece)
 
     GAME_BOARD.placed_pieces = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
