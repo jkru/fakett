@@ -13,12 +13,17 @@ DEBUG = False
 
 ##set the size of the game board
 
-GAME_WIDTH = 4
-GAME_HEIGHT = 4
+GAME_WIDTH = 7
+GAME_HEIGHT = 7
 
 #### Put class definitions here ####
 
+class ShortTree(GameElement):
+    IMAGE = "ShortTree"
+    SOLID = True
+
 class Piece(GameElement):
+    is_placed = False
     def __init__(self, piece_type):
         #pick which piece type
         # self.piece_type = random.choice(["Rock","GreenGem","Star"])
@@ -78,8 +83,57 @@ class Piece(GameElement):
                     self.board.set_el(next_x, next_y, self)
 
         if direction == "putdown":
-            GAME_BOARD.register(self)
-#            make_random_piece()
+            #turn on flag
+            self.is_placed = True
+
+
+            #determine how to update matrix
+            if self.piece_type == "Rock":
+                the_type = 1
+            elif self.piece_type == "GreenGem":
+                the_type = 2
+            elif self.piece_type == "Star":
+                the_type = 3
+            else:
+                the_type = 0
+
+            #update matrix
+            self.board.placed_pieces[self.y][self.x] = the_type
+
+            #check our matrix horizontally
+            horizontal_check = []
+            for j in range((self.x - 2),(self.x + 3)):
+                horizontal_check.append(self.board.placed_pieces[self.y][j])
+
+            hc_str = ''.join(str(e) for e in horizontal_check)
+
+            vertical_check = []
+            for i in range((self.y - 2),(self.y + 3)):
+                vertical_check.append(self.board.placed_pieces[i][self.x])
+                
+            vc_str = ''.join(str(e) for e in vertical_check)
+
+
+
+
+
+            #print self.board.placed_pieces
+
+
+            # #need to put that piece down there forever:
+            # self.board.set_el(self.next_pos(direction)[0],self.next_pos(direction)[1],self)
+
+            # #supposed to create a new random piece
+            # new_piece = make_random_piece()
+            # GAME_BOARD.register(new_piece)
+            # new_piece_position = self.next_pos(direction)
+            # new_x = new_piece_position[0] + 1
+            # new_y = new_piece_position[1]
+            # GAME_BOARD.set_el(new_x,new_y,new_piece)
+
+
+            # print("gets here?")
+            # direction = None
             
 
             # new_piece = [next_x, next_y, self.piece_type]
@@ -107,48 +161,57 @@ class Star(Piece):
 
 
 ####   End class definitions    ####
-# def make_random_piece():
-#     first_piece_class = random.choice(["Rock","Star","GreenGem"])
-#     if first_piece_class == "Rock":
-#         first_piece = Rock()
-#     elif first_piece_class == "GreenGem":
-#         first_piece = GreenGem()
-#     else:
-#         first_piece = Star()
-#     return(first_piece)
+def make_random_piece():
+    first_piece_class = random.choice(["Rock","Star","GreenGem"])
+
+    if first_piece_class == "Rock":
+        first_piece = Rock()
+    elif first_piece_class == "GreenGem":
+        first_piece = GreenGem()
+    else:
+        first_piece = Star()
+    return(first_piece)
 
 
 
 def initialize():
     """Put game initialization code here"""
 
-    a_piece_class = random.choice(["Rock","Star","GreenGem"])
-    if a_piece_class == "Rock":
-         a_piece = Rock()
-    elif a_piece_class == "GreenGem":
-         a_piece = GreenGem()
-    else:
-         a_piece = Star()
+    tree_positions = []
 
-#    a_piece = make_random_piece()
+    for i in range(7):
+        tree_positions.append([0,i])
+    for i in range(1,7):
+        tree_positions.append([i,0])
+    for i in range(1,7):
+        tree_positions.append([6,i])
+    for i in range(1,6):
+        tree_positions.append([i,6])
+
+
+
+    trees = []
+    for pos in tree_positions:
+        tree = ShortTree()
+        GAME_BOARD.register(tree)
+        GAME_BOARD.set_el(pos[0], pos[1], tree)
+        trees.append(tree)
+
+    a_piece = make_random_piece()
     GAME_BOARD.register(a_piece)
-    first_x = random.randint(0,3)
-    first_y = random.randint(0,3)
+    first_x = random.randint(1,5)
+    first_y = random.randint(1,5)
     GAME_BOARD.set_el(first_x,first_y,a_piece)
 
+    GAME_BOARD.placed_pieces = [[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0],[0,0,0,0,0,0,0],[0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0],[0,0,0,0,0,0,0]]
 
 
-def tripletown():
-        #initialize matrix to 0, for nothing in it
-    board_matrix = []
-    for i in range(GAME_WIDTH):
-        board_matrix.append([])
-        for j in range(GAME_HEIGHT):
-            board_matrix[i].append([0,0,0,0])
+    print ("this is the game board init")
+    print GAME_BOARD.placed_pieces
 
-    print(board_matrix)
-
-
+         #   GAME_BOARD.placed_pieces[i].append([0,0,0,0])
 
 
     #get some sort of method from the piece class
