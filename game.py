@@ -17,6 +17,33 @@ GAME_WIDTH = 7
 GAME_HEIGHT = 7
 
 #### Put class definitions here ####
+class Placed(GameElement):
+    SOLID = True
+    value = 0
+#    def __init__(self):
+#        horizontalcol = []
+#        for i in range(3):
+#            horizontalcol.append(GAME_BOARD.placed_pieces[self.y][i])
+#        is_trip  = find_triples(horizontalcol,self.value,0)
+#        if is_trip[1] and is_trip[2]:
+#            if is_trip[0]==is_trip[1] and is_trip[2]==is_trip[0]:
+#                set_triples_horiz()
+#                GAME_BOARD.placed_pieces[self.y][self.x] = self.value+1
+
+
+
+class PlacedRock(Placed):
+    IMAGE = "Rock"
+    value = 1
+
+class PlacedGreenGem(Placed):
+    IMAGE = "GreenGem"
+    value = 2
+
+class PlacedStar(Placed):
+    IMAGE = "Star"
+    value = 3
+
 
 class ShortTree(GameElement):
     IMAGE = "ShortTree"
@@ -25,9 +52,6 @@ class ShortTree(GameElement):
 class Piece(GameElement):
     is_placed = False
     def __init__(self, piece_type):
-        #pick which piece type
-        # self.piece_type = random.choice(["Rock","GreenGem","Star"])
-        # IMAGE = self.piece_type
         self.piece_type = piece_type
         GAME_BOARD.draw_msg("You just acquired a %s! Move your piece with the arrow keys and place with spacebar" % self.piece_type)
         print(self.piece_type)
@@ -86,9 +110,6 @@ class Piece(GameElement):
             #turn on flag
             self.is_placed = True
 
-
-
-
             #determine how to update matrix
             if self.piece_type == "Rock":
                 the_type = 1
@@ -103,73 +124,56 @@ class Piece(GameElement):
             self.board.placed_pieces[self.y][self.x] = the_type
 
             #check our matrix horizontally
-            horizontal_check = []
-#            for j in range((self.x - 2),(self.x + 3)):
-            for j in range(5):
-                horizontal_check.append(self.board.placed_pieces[self.y][j])
+            hc = []
+            for j in range(1,6):
+                hc.append(self.board.placed_pieces[self.y][j])
 
-            hc_str = ''.join(str(e) for e in horizontal_check)
+            hc_str = ''.join(str(e) for e in hc)
             if str(the_type)*3 in hc_str:
+                print "*******************"
                 print self.board.placed_pieces
+                #create initial indices for where the 3 like-pieces are being placed
+                for i in range(3):
+                    three_like_types = find_triples(hc,the_type, i)
+                    print "***three like types***"
+                    print three_like_types
+                    raw_input()
+                    if three_like_types[1] and three_like_types[2]:
+                        if three_like_types[0] == three_like_types[1] and three_like_types[0] == three_like_types[2]:  
+                            set_triples_horiz(three_like_types)
+                            GAME_BOARD.del_el(3,3)
+                            GAME_BOARD.del_el(2,3)
+                            GAME_BOARD.del_el(1,3)
+                            break
+
                 self.board.placed_pieces[self.y][self.x] = the_type+1
-                print("hooray!")
+
+                print(self.board.placed_pieces[self.y][self.x],self.y,self.x,"hooray!")
+                
+
             else:
                 print("stuff")
-                print self.board.placed_pieces
+            print("Horizontal Check")
+            print self.board.placed_pieces
 
-            vertical_check = []
-#            for i in range((self.y - 2),(self.y + 3)):
-            for j in range(5):
-                print(j,self.x, self.board.placed_pieces[j][self.x])
-               # raw_input()
-                vertical_check.append(self.board.placed_pieces[j][self.x])
-            vc_str = ''.join(str(e) for e in vertical_check)
+            putdownx = self.x
+            putdowny = self.y
 
-            if str(the_type)*3 in vc_str:
-                print self.board.placed_pieces
-                self.board.placed_pieces[self.y][self.x] = the_type+1
-                print("hooray!")
-            else:
-                print("stuff")
-                print self.board.placed_pieces
+            if self.x + 2 <= GAME_WIDTH:
+                GAME_BOARD.set_el(putdownx+1,putdowny, self)
+            elif self.y + 2 <= GAME_HEIGHT:
+                GAME_BOARD.set_el(putdownx,putdowny+1, self)
 
-
-            GAME_BOARD.set_el(self.x+1,self.y, self)
-
-
-
-            placed_piece = ShortTree()
+            if self.piece_type == "Rock":
+                placed_piece = PlacedRock()
+            elif self.piece_type == "GreenGem":
+                placed_piece = PlacedGreenGem()
+            elif self.piece_type == "Star":
+                placed_piece = PlacedStar()
             GAME_BOARD.register(placed_piece)
-            GAME_BOARD.set_el(self.x,self.y, placed_piece)
+            GAME_BOARD.set_el(putdownx, putdowny, placed_piece)
 
-
-
-            # #print self.board.placed_pieces
-
-            # # #need to put that piece down there forever:
-            # # self.board.set_el(self.next_pos(direction)[0],self.next_pos(direction)[1],self)
-
-            # # #supposed to create a new random piece
-            # #new_piece = make_random_piece()
-            # new_piece = Rock()
-            # GAME_BOARD.register(new_piece)
-            # GAME_BOARD.set_el(4,4, new_piece)
-
-            # # new_piece_position = self.next_pos(direction)
-            # # new_x = new_piece_position[0] +1
-            # # new_y = new_piece_position[1]
-            # # GAME_BOARD.set_el(new_x,new_y,new_piece)
-
-
-            # # print("gets here?")
-            # # direction = None
             
-
-            # new_piece = [next_x, next_y, self.piece_type]
-            # x,y, piece_type = new_piece
-
-
-
 class Rock(Piece):
     IMAGE = "Rock"
     def __init__(self):
@@ -190,16 +194,38 @@ class Star(Piece):
 
 
 ####   End class definitions    ####
-def make_random_piece():
-    first_piece_class = random.choice(["Rock","Star","GreenGem"])
+def find_triples(board_col, the_type, start):
+    try:
+        first_oc = board_col.index(the_type, start)
+        second_oc = board_col.index(the_type, first_oc+1)
+        third_oc =  board_col.index(the_type, second_oc+1)
+        return [first_oc, second_oc, third_oc]
+    except:
+        pass
+    return([0,1,2])
 
-    if first_piece_class == "Rock":
-        first_piece = Rock()
-    elif first_piece_class == "GreenGem":
-        first_piece = GreenGem()
+def set_triples_horiz(trips):
+    first_oc, second_oc, third_oc = trips 
+    GAME_BOARD.placed_pieces[self.y][first_oc] = 0
+    GAME_BOARD.placed_pieces[self.y][second_oc] = 0
+    GAME_BOARD.placed_pieces[self.y][third_oc] = 0
+
+    GAME_BOARD.del_el(first_oc ,self.y)
+    GAME_BOARD.del_el(second_oc,self.y)
+    GAME_BOARD.del_el(third_oc ,self.y)
+    raw_input("In the triples")
+
+def make_random_piece():
+    random_piece_class = random.choice(["Star","GreenGem","Rock"])
+    raw_input(random_piece_class)
+
+    if random_piece_class == "Rock":
+        random_piece = Rock()
+    elif random_piece_class == "GreenGem":
+        random_piece = GreenGem()
     else:
-        first_piece = Star()
-    return(first_piece)
+        random_piece = Star()
+    return(random_piece)
 
 
 
@@ -217,7 +243,7 @@ def initialize():
     for i in range(1,6):
         tree_positions.append([i,6])
 
-    new_piece = Rock()
+    new_piece = make_random_piece()
     GAME_BOARD.register(new_piece)
     GAME_BOARD.set_el(4,4, new_piece)
 

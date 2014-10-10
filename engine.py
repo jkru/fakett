@@ -122,7 +122,6 @@ def run():
     pyglet.clock.schedule_interval(update, 1/10.)
     game.initialize()
     pyglet.app.run()
-    game.tripletown()
     #some other fucntion that runs things
     #game.tripletown()
     ### store the matrix
